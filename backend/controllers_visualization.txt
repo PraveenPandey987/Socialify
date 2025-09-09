@@ -1,0 +1,125 @@
+digraph SocialifyControllers {
+    // Graph properties
+    rankdir=TB;
+    node [shape=record, style=filled];
+    edge [color=darkblue, fontsize=10];
+
+    // User Controller
+    UserController [
+        fillcolor=lightblue,
+        label="{UserController|{Authentication|}+ register()\l+ login()\l|{Profile Management|}+ updateUser()\l+ getUser()\l+ getRandomUsers()\l|{Social Features|}+ follow()\l+ unfollow()\l+ getFollowers()\l+ getFollowing()\l|{Helper Functions|}+ getUserDict()\l+ buildToken()\l+ getRandomIndices()\l}"
+    ];
+
+    // Post Controller
+    PostController [
+        fillcolor=lightgreen,
+        label="{PostController|{CRUD Operations|}+ createPost()\l+ getPost()\l+ updatePost()\l+ deletePost()\l+ getPosts()\l|{Like System|}+ likePost()\l+ unlikePost()\l+ getUserLikes()\l+ getUserLikedPosts()\l|{Data Enrichment|}+ setLiked()\l+ enrichWithUserLikePreview()\l}"
+    ];
+
+    // Comment Controller
+    CommentController [
+        fillcolor=lightyellow,
+        label="{CommentController|{CRUD Operations|}+ createComment()\l+ updateComment()\l+ deleteComment()\l|{Retrieval Operations|}+ getPostComments()\l+ getUserComments()\l}"
+    ];
+
+    // Message Controller
+    MessageController [
+        fillcolor=lightcoral,
+        label="{MessageController|{Messaging Operations|}+ sendMessage()\l+ getMessages()\l+ getConversations()\l}"
+    ];
+
+    // Feature Categories
+    subgraph cluster_features {
+        label="Feature Categories";
+        style=filled;
+        fillcolor=lightgray;
+        
+        AuthFeatures [shape=ellipse, fillcolor=white, label="Authentication\n• User Registration\n• Login/JWT\n• Profile Updates"];
+        SocialFeatures [shape=ellipse, fillcolor=white, label="Social Features\n• Follow/Unfollow\n• User Discovery\n• Social Stats"];
+        ContentFeatures [shape=ellipse, fillcolor=white, label="Content Management\n• Posts CRUD\n• Comments CRUD\n• Hierarchical Comments"];
+        EngagementFeatures [shape=ellipse, fillcolor=white, label="Engagement\n• Like/Unlike Posts\n• Like Statistics\n• Social Proof"];
+        MessagingFeatures [shape=ellipse, fillcolor=white, label="Private Messaging\n• Send Messages\n• Conversations\n• Message History"];
+    }
+
+    // Relationships
+    UserController -> AuthFeatures [color=blue];
+    UserController -> SocialFeatures [color=blue];
+    
+    PostController -> ContentFeatures [color=green];
+    PostController -> EngagementFeatures [color=green];
+    
+    CommentController -> ContentFeatures [color=orange];
+    
+    MessageController -> MessagingFeatures [color=red];
+
+    // Security & Performance Features
+    subgraph cluster_crosscutting {
+        label="Cross-Cutting Concerns";
+        style=filled;
+        fillcolor=lightyellow;
+        
+        SecurityFeatures [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightpink"><b>Security Features</b></td></tr>
+                <tr><td align="left">• Password Hashing (bcrypt)</td></tr>
+                <tr><td align="left">• JWT Token Authentication</td></tr>
+                <tr><td align="left">• Owner/Admin Authorization</td></tr>
+                <tr><td align="left">• Input Validation</td></tr>
+                <tr><td align="left">• Profanity Filtering</td></tr>
+            </table>
+        >];
+        
+        PerformanceFeatures [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightcyan"><b>Performance Features</b></td></tr>
+                <tr><td align="left">• Rate Limiting (Cooldowns)</td></tr>
+                <tr><td align="left">• Pagination Support</td></tr>
+                <tr><td align="left">• Data Population</td></tr>
+                <tr><td align="left">• Lean Queries</td></tr>
+                <tr><td align="left">• Batch Operations</td></tr>
+            </table>
+        >];
+    }
+
+    // Function Details
+    subgraph cluster_details {
+        label="Key Function Details";
+        style=filled;
+        fillcolor=lightsteelblue;
+        
+        FunctionDetails [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue" colspan="2"><b>Rate Limiting</b></td></tr>
+                <tr><td align="left">createPost()</td><td>60 seconds cooldown</td></tr>
+                <tr><td align="left">createComment()</td><td>30 seconds cooldown</td></tr>
+                
+                <tr><td bgcolor="lightgreen" colspan="2"><b>Data Enrichment</b></td></tr>
+                <tr><td align="left">setLiked()</td><td>Adds user like status</td></tr>
+                <tr><td align="left">enrichWithUserLikePreview()</td><td>Shows who liked posts</td></tr>
+                
+                <tr><td bgcolor="lightyellow" colspan="2"><b>Hierarchical Data</b></td></tr>
+                <tr><td align="left">getPostComments()</td><td>Builds comment tree structure</td></tr>
+                
+                <tr><td bgcolor="lightcoral" colspan="2"><b>Auto-Management</b></td></tr>
+                <tr><td align="left">sendMessage()</td><td>Auto-creates conversations</td></tr>
+                <tr><td align="left">deletePost()</td><td>Cascades comment deletion</td></tr>
+            </table>
+        >];
+    }
+
+    // Legend
+    subgraph cluster_legend {
+        label="Controller Legend";
+        style=filled;
+        fillcolor=white;
+        
+        legend [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue">User Controller - Authentication & Social</td></tr>
+                <tr><td bgcolor="lightgreen">Post Controller - Content & Engagement</td></tr>
+                <tr><td bgcolor="lightyellow">Comment Controller - Comments & Replies</td></tr>
+                <tr><td bgcolor="lightcoral">Message Controller - Private Messaging</td></tr>
+            </table>
+        >];
+    }
+}
