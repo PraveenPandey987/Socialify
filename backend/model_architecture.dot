@@ -1,0 +1,95 @@
+digraph SocialifyModels {
+    // Graph properties
+    rankdir=TB;
+    node [shape=record, style=filled, fillcolor=lightblue];
+    edge [color=darkblue, fontsize=10];
+
+    // User Model
+    User [label="{User|+ username: String (unique)\l+ email: String (unique)\l+ password: String\l+ biography: String\l+ isAdmin: Boolean\l+ createdAt: Date\l+ updatedAt: Date\l}"];
+
+    // Post Model  
+    Post [label="{Post|+ poster: ObjectId (ref: User)\l+ title: String\l+ content: String\l+ likeCount: Number\l+ commentCount: Number\l+ edited: Boolean\l+ createdAt: Date\l+ updatedAt: Date\l}"];
+
+    // Comment Model
+    Comment [label="{Comment|+ commenter: ObjectId (ref: User)\l+ post: ObjectId (ref: Post)\l+ content: String\l+ parent: ObjectId (ref: Comment)\l+ children: Array[ObjectId]\l+ edited: Boolean\l+ createdAt: Date\l+ updatedAt: Date\l}"];
+
+    // PostLike Model
+    PostLike [label="{PostLike|+ postId: ObjectId (ref: Post)\l+ userId: ObjectId (ref: User)\l+ createdAt: Date\l+ updatedAt: Date\l}"];
+
+    // Follow Model
+    Follow [label="{Follow|+ userId: ObjectId (ref: User)\l+ followingId: ObjectId (ref: User)\l+ createdAt: Date\l+ updatedAt: Date\l}"];
+
+    // Message Model
+    Message [label="{Message|+ conversation: ObjectId (ref: Conversation)\l+ sender: ObjectId (ref: User)\l+ content: String\l+ createdAt: Date\l+ updatedAt: Date\l}"];
+
+    // Conversation Model
+    Conversation [label="{Conversation|+ recipients: Array[ObjectId] (ref: User)\l+ lastMessageAt: Date\l+ createdAt: Date\l+ updatedAt: Date\l}"];
+
+    // Relationships
+    // User to Post (One-to-Many)
+    User -> Post [label="creates" color="green"];
+
+    // User to Comment (One-to-Many) 
+    User -> Comment [label="writes" color="green"];
+
+    // Post to Comment (One-to-Many)
+    Post -> Comment [label="has" color="green"];
+
+    // Comment to Comment (One-to-Many - Self-referencing)
+    Comment -> Comment [label="replies to" color="purple"];
+
+    // User to PostLike (Many-to-Many through PostLike)
+    User -> PostLike [label="likes" color="red"];
+    Post -> PostLike [label="liked by" color="red"];
+
+    // User to Follow (Many-to-Many - Self-referencing)
+    User -> Follow [label="follows" color="orange"];
+    User -> Follow [label="followed by" color="orange", style="dashed"];
+
+    // User to Message (One-to-Many)
+    User -> Message [label="sends" color="blue"];
+
+    // Conversation to Message (One-to-Many)
+    Conversation -> Message [label="contains" color="blue"];
+
+    // User to Conversation (Many-to-Many)
+    User -> Conversation [label="participates in" color="blue", style="dashed"];
+
+    // Legend
+    subgraph cluster_legend {
+        label="Legend";
+        style=filled;
+        fillcolor=lightyellow;
+        
+        legend [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightgreen">Green: Content Creation</td></tr>
+                <tr><td bgcolor="lightcoral">Red: Engagement (Likes)</td></tr>
+                <tr><td bgcolor="orange">Orange: Social (Following)</td></tr>
+                <tr><td bgcolor="lightblue">Blue: Messaging</td></tr>
+                <tr><td bgcolor="plum">Purple: Hierarchical</td></tr>
+                <tr><td>Solid: One-to-Many</td></tr>
+                <tr><td style="border-style: dashed;">Dashed: Many-to-Many</td></tr>
+            </table>
+        >];
+    }
+
+    // Model descriptions
+    subgraph cluster_descriptions {
+        label="Model Descriptions";
+        style=filled;
+        fillcolor=lightgray;
+        
+        descriptions [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td align="left"><b>User:</b> Authentication & profiles</td></tr>
+                <tr><td align="left"><b>Post:</b> Main content with engagement metrics</td></tr>
+                <tr><td align="left"><b>Comment:</b> Nested comment system</td></tr>
+                <tr><td align="left"><b>PostLike:</b> User-Post like relationships</td></tr>
+                <tr><td align="left"><b>Follow:</b> User-User following system</td></tr>
+                <tr><td align="left"><b>Message:</b> Individual chat messages</td></tr>
+                <tr><td align="left"><b>Conversation:</b> Message grouping for users</td></tr>
+            </table>
+        >];
+    }
+}

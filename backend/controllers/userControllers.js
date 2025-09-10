@@ -22,6 +22,18 @@ const buildToken = (user) => {
   };
 };
 
+
+const getRandomIndices = (size, sourceSize) => {
+  const randomIndices = [];
+  while (randomIndices.length < size) {
+    const randomNumber = Math.floor(Math.random() * sourceSize);
+    if (!randomIndices.includes(randomNumber)) {
+      randomIndices.push(randomNumber);
+    }
+  }
+  return randomIndices;
+};
+
 const register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -106,27 +118,6 @@ const follow = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
-  try {
-    const { userId, biography } = req.body;
-
-    const user = await User.findById(userId);
-
-    if (!user) {
-      throw new Error("User does not exist");
-    }
-
-    if (typeof biography == "string") {
-      user.biography = biography;
-    }
-
-    await user.save();
-
-    return res.status(200).json({ success: true });
-  } catch (err) {
-    return res.status(400).json({ error: err.message });
-  }
-};
 
 const unfollow = async (req, res) => {
   try {
@@ -166,6 +157,30 @@ const getFollowing = async (req, res) => {
     const following = await Follow.find({ userId });
 
     return res.status(200).json({ data: following });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+};
+
+
+
+const updateUser = async (req, res) => {
+  try {
+    const { userId, biography } = req.body;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error("User does not exist");
+    }
+
+    if (typeof biography == "string") {
+      user.biography = biography;
+    }
+
+    await user.save();
+
+    return res.status(200).json({ success: true });
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }
@@ -232,16 +247,7 @@ const getRandomUsers = async (req, res) => {
   }
 };
 
-const getRandomIndices = (size, sourceSize) => {
-  const randomIndices = [];
-  while (randomIndices.length < size) {
-    const randomNumber = Math.floor(Math.random() * sourceSize);
-    if (!randomIndices.includes(randomNumber)) {
-      randomIndices.push(randomNumber);
-    }
-  }
-  return randomIndices;
-};
+
 
 module.exports = {
   register,

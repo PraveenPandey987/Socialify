@@ -1,0 +1,113 @@
+digraph SocialifyFlow {
+    rankdir=TD;
+    node [shape=box, style=filled, fontname="Arial"];
+    
+    // User Actions
+    Start [label="User Opens App", shape=ellipse, fillcolor=lightgreen];
+    
+    // Authentication Flow
+    Login [label="Login/Register", fillcolor=lightblue];
+    AuthCheck [label="JWT Validation", shape=diamond, fillcolor=yellow];
+    Dashboard [label="Dashboard/Feed", fillcolor=lightcyan];
+    
+    // Core Features Flow
+    subgraph cluster_social {
+        label="Social Features";
+        color=blue;
+        style=filled;
+        fillcolor=aliceblue;
+        
+        CreatePost [label="Create Post", fillcolor=lightcoral];
+        ViewPost [label="View Posts", fillcolor=lightcoral];
+        LikePost [label="Like/Unlike Post", fillcolor=pink];
+        CommentPost [label="Comment on Post", fillcolor=pink];
+        
+        FollowUser [label="Follow/Unfollow User", fillcolor=lightsteelblue];
+        ViewProfile [label="View User Profile", fillcolor=lightsteelblue];
+    }
+    
+    // Messaging Flow
+    subgraph cluster_messaging {
+        label="Real-time Messaging";
+        color=green;
+        style=filled;
+        fillcolor=lightgreen;
+        
+        OpenChat [label="Open Chat", fillcolor=lightgreen];
+        SendMessage [label="Send Message", fillcolor=lightgreen];
+        ReceiveMessage [label="Receive Message\n(Socket.io)", fillcolor=lightgreen];
+        UpdateConversation [label="Update Conversation", fillcolor=lightgreen];
+    }
+    
+    // Data Processing
+    subgraph cluster_processing {
+        label="Backend Processing";
+        color=orange;
+        style=filled;
+        fillcolor=lightyellow;
+        
+        ValidateInput [label="Input Validation", fillcolor=orange];
+        FilterContent [label="Content Filtering\n(Bad Words)", fillcolor=orange];
+        SaveToDB [label="Save to MongoDB", fillcolor=orange];
+        UpdateCounts [label="Update Counters\n(Likes, Comments)", fillcolor=orange];
+        Pagination [label="Paginate Results", fillcolor=orange];
+    }
+    
+    // Response Flow
+    APIResponse [label="API Response", fillcolor=lightgray];
+    UpdateUI [label="Update React UI", fillcolor=lightcyan];
+    
+    // Error Handling
+    ErrorHandler [label="Error Handler", shape=diamond, fillcolor=red, fontcolor=white];
+    ErrorResponse [label="Error Response", fillcolor=lightcoral];
+    
+    // Flow Connections
+    Start -> Login;
+    Login -> AuthCheck;
+    AuthCheck -> Dashboard [label="Valid"];
+    AuthCheck -> Login [label="Invalid"];
+    
+    Dashboard -> CreatePost;
+    Dashboard -> ViewPost;
+    Dashboard -> FollowUser;
+    Dashboard -> ViewProfile;
+    Dashboard -> OpenChat;
+    
+    CreatePost -> ValidateInput;
+    ViewPost -> Pagination;
+    LikePost -> UpdateCounts;
+    CommentPost -> ValidateInput;
+    FollowUser -> SaveToDB;
+    
+    OpenChat -> ReceiveMessage;
+    SendMessage -> ValidateInput;
+    
+    ValidateInput -> FilterContent;
+    FilterContent -> SaveToDB;
+    SaveToDB -> UpdateCounts;
+    UpdateCounts -> APIResponse;
+    Pagination -> APIResponse;
+    
+    SendMessage -> UpdateConversation;
+    UpdateConversation -> ReceiveMessage;
+    
+    APIResponse -> UpdateUI;
+    UpdateUI -> Dashboard;
+    
+    // Error Flow
+    ValidateInput -> ErrorHandler [label="Validation Failed"];
+    FilterContent -> ErrorHandler [label="Content Blocked"];
+    SaveToDB -> ErrorHandler [label="DB Error"];
+    AuthCheck -> ErrorHandler [label="Auth Error"];
+    
+    ErrorHandler -> ErrorResponse;
+    ErrorResponse -> UpdateUI;
+    
+    // Additional Flows
+    ViewPost -> CommentPost;
+    ViewPost -> LikePost;
+    ViewProfile -> FollowUser;
+    
+    // Socket.io real-time updates
+    ReceiveMessage -> UpdateUI [label="Real-time Update", style=dashed, color=green];
+}

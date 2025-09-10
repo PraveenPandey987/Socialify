@@ -1,0 +1,156 @@
+digraph SocialifyRoutes {
+    // Graph properties
+    rankdir=LR;
+    node [shape=record, style=filled];
+    edge [fontsize=10];
+
+    // User Routes
+    UserRoutes [
+        fillcolor=lightblue,
+        label="{/users|{Authentication - Public|}POST /register\l POST /login\l GET /random\l|{Profile - Mixed Auth|}GET /:username (public)\l PATCH /:id (🔒 auth)\l|{Social - Mixed Auth|}POST /follow/:id (🔒 auth)\l DELETE /unfollow/:id (🔒 auth)\l GET /followers/:id (public)\l GET /following/:id (public)\l}"
+    ];
+
+    // Post Routes  
+    PostRoutes [
+        fillcolor=lightgreen,
+        label="{/posts|{CRUD - Mixed Auth|}GET / (🔓 optional)\l POST / (🔒 auth)\l GET /:id (🔓 optional)\l PATCH /:id (🔒 auth)\l DELETE /:id (🔒 auth)\l|{Likes - Mixed Auth|}POST /like/:id (🔒 auth)\l DELETE /like/:id (🔒 auth)\l GET /liked/:id (🔓 optional)\l GET /like/:postId/users (public)\l}"
+    ];
+
+    // Comment Routes
+    CommentRoutes [
+        fillcolor=lightyellow,
+        label="{/comments|{CRUD - Auth Required|}POST /:id (🔒 auth)\l PATCH /:id (🔒 auth)\l DELETE /:id (🔒 auth)\l|{Retrieval - Public|}GET /post/:id (public)\l GET /user/:id (public)\l}"
+    ];
+
+    // Message Routes
+    MessageRoutes [
+        fillcolor=lightcoral,
+        label="{/messages|{All Auth Required|}GET / (🔒 auth)\l POST /:id (🔒 auth)\l GET /:id (🔒 auth)\l}"
+    ];
+
+    // Authentication Types
+    subgraph cluster_auth {
+        label="Authentication Middleware";
+        style=filled;
+        fillcolor=lightgray;
+        
+        AuthTypes [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightcoral"><b>🔒 verifyToken</b></td><td align="left">Required Authentication</td></tr>
+                <tr><td bgcolor="lightyellow"><b>🔓 optionallyVerifyToken</b></td><td align="left">Optional Authentication</td></tr>
+                <tr><td bgcolor="lightgreen"><b>Public</b></td><td align="left">No Authentication</td></tr>
+            </table>
+        >];
+    }
+
+    // HTTP Methods
+    subgraph cluster_methods {
+        label="HTTP Methods Overview";
+        style=filled;
+        fillcolor=lightsteelblue;
+        
+        HTTPMethods [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightgreen"><b>GET</b></td><td align="left">12 endpoints - Retrieve data</td></tr>
+                <tr><td bgcolor="lightblue"><b>POST</b></td><td align="left">5 endpoints - Create resources</td></tr>
+                <tr><td bgcolor="lightyellow"><b>PATCH</b></td><td align="left">3 endpoints - Update resources</td></tr>
+                <tr><td bgcolor="lightcoral"><b>DELETE</b></td><td align="left">3 endpoints - Remove resources</td></tr>
+            </table>
+        >];
+    }
+
+    // Route Details
+    subgraph cluster_details {
+        label="Route Details & Features";
+        style=filled;
+        fillcolor=lavender;
+        
+        RouteDetails [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue" colspan="2"><b>User Routes Features</b></td></tr>
+                <tr><td align="left">GET /random</td><td>User discovery with size parameter</td></tr>
+                <tr><td align="left">GET /:username</td><td>Public profiles with post stats</td></tr>
+                <tr><td align="left">Social endpoints</td><td>Follow/unfollow with relationship tracking</td></tr>
+                
+                <tr><td bgcolor="lightgreen" colspan="2"><b>Post Routes Features</b></td></tr>
+                <tr><td align="left">GET /</td><td>Feed with search, filter, pagination</td></tr>
+                <tr><td align="left">GET /:id</td><td>Single post with like status & previews</td></tr>
+                <tr><td align="left">Like endpoints</td><td>Toggle likes with user list retrieval</td></tr>
+                
+                <tr><td bgcolor="lightyellow" colspan="2"><b>Comment Routes Features</b></td></tr>
+                <tr><td align="left">GET /post/:id</td><td>Hierarchical comment tree</td></tr>
+                <tr><td align="left">POST /:id</td><td>Supports nested replies via parentId</td></tr>
+                
+                <tr><td bgcolor="lightcoral" colspan="2"><b>Message Routes Features</b></td></tr>
+                <tr><td align="left">POST /:id</td><td>Auto-creates conversations</td></tr>
+                <tr><td align="left">GET /</td><td>List user conversations</td></tr>
+                <tr><td align="left">GET /:id</td><td>Conversation message history</td></tr>
+            </table>
+        >];
+    }
+
+    // Security Features
+    subgraph cluster_security {
+        label="Security & Authorization";
+        style=filled;
+        fillcolor=mistyrose;
+        
+        SecurityDetails [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightcoral" colspan="2"><b>Authorization Patterns</b></td></tr>
+                <tr><td align="left">Owner-only</td><td>Users can only edit their own content</td></tr>
+                <tr><td align="left">Admin override</td><td>Admins can edit/delete any content</td></tr>
+                <tr><td align="left">Public read</td><td>Most content readable without auth</td></tr>
+                <tr><td align="left">Private write</td><td>Creating content requires authentication</td></tr>
+                
+                <tr><td bgcolor="lightyellow" colspan="2"><b>Rate Limiting</b></td></tr>
+                <tr><td align="left">Posts</td><td>1 per minute per user</td></tr>
+                <tr><td align="left">Comments</td><td>1 per 30 seconds per user</td></tr>
+                <tr><td align="left">In-memory cooldown</td><td>Using JavaScript Set</td></tr>
+            </table>
+        >];
+    }
+
+    // API Parameters
+    subgraph cluster_params {
+        label="Query Parameters & Features";
+        style=filled;
+        fillcolor=lightcyan;
+        
+        APIFeatures [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightgreen" colspan="2"><b>Pagination & Sorting</b></td></tr>
+                <tr><td align="left">page</td><td>Page number for pagination</td></tr>
+                <tr><td align="left">sortBy</td><td>Sort field (default: -createdAt)</td></tr>
+                <tr><td align="left">size</td><td>Items per page (for random users)</td></tr>
+                
+                <tr><td bgcolor="lightblue" colspan="2"><b>Filtering & Search</b></td></tr>
+                <tr><td align="left">author</td><td>Filter posts by username</td></tr>
+                <tr><td align="left">search</td><td>Text search in post titles</td></tr>
+                <tr><td align="left">liked</td><td>Filter user's liked posts</td></tr>
+                <tr><td align="left">anchor</td><td>Cursor-based pagination for likes</td></tr>
+            </table>
+        >];
+    }
+
+    // Route Relationships
+    UserRoutes -> PostRoutes [label="author filter" color="blue"];
+    PostRoutes -> CommentRoutes [label="post comments" color="green"];  
+    UserRoutes -> MessageRoutes [label="conversations" color="red"];
+
+    // Legend
+    subgraph cluster_legend {
+        label="Legend";
+        style=filled;
+        fillcolor=white;
+        
+        legend [shape=none, label=<
+            <table border="0" cellborder="1" cellspacing="0">
+                <tr><td bgcolor="lightblue">/users - Authentication & Social Features</td></tr>
+                <tr><td bgcolor="lightgreen">/posts - Content Management & Engagement</td></tr>
+                <tr><td bgcolor="lightyellow">/comments - Comment System</td></tr>
+                <tr><td bgcolor="lightcoral">/messages - Private Messaging</td></tr>
+            </table>
+        >];
+    }
+}
