@@ -1,0 +1,111 @@
+digraph SocialifyArchitecture {
+    rankdir=TB;
+    node [shape=box, style=filled, fontname="Arial"];
+    
+    // Frontend Layer
+    subgraph cluster_frontend {
+        label="Frontend (React)";
+        color=lightblue;
+        style=filled;
+        fillcolor=lightcyan;
+        
+        UI [label="React Components\n(UI Layer)", fillcolor=lightblue];
+        Router [label="React Router\n(Navigation)", fillcolor=lightblue];
+        State [label="State Management\n(Local State)", fillcolor=lightblue];
+        SocketClient [label="Socket.io Client\n(Real-time)", fillcolor=lightgreen];
+    }
+    
+    // Backend Layer
+    subgraph cluster_backend {
+        label="Backend (Node.js/Express)";
+        color=orange;
+        style=filled;
+        fillcolor=lightyellow;
+        
+        Express [label="Express Server\n(REST API)", fillcolor=orange];
+        SocketServer [label="Socket.io Server\n(Real-time)", fillcolor=lightgreen];
+        Auth [label="Auth Middleware\n(JWT)", fillcolor=yellow];
+        
+        // Controllers
+        subgraph cluster_controllers {
+            label="Controllers";
+            color=red;
+            UserController [label="User Controller", fillcolor=lightcoral];
+            PostController [label="Post Controller", fillcolor=lightcoral];
+            CommentController [label="Comment Controller", fillcolor=lightcoral];
+            MessageController [label="Message Controller", fillcolor=lightcoral];
+        }
+        
+        // Models
+        subgraph cluster_models {
+            label="Models (Mongoose)";
+            color=purple;
+            UserModel [label="User Model", fillcolor=plum];
+            PostModel [label="Post Model", fillcolor=plum];
+            CommentModel [label="Comment Model", fillcolor=plum];
+            MessageModel [label="Message Model", fillcolor=plum];
+            FollowModel [label="Follow Model", fillcolor=plum];
+            PostLikeModel [label="PostLike Model", fillcolor=plum];
+            ConversationModel [label="Conversation Model", fillcolor=plum];
+        }
+        
+        Utils [label="Utilities\n(Paginate, Validation)", fillcolor=lightgray];
+    }
+    
+    // Database Layer
+    MongoDB [label="MongoDB\n(Database)", shape=cylinder, fillcolor=darkgreen, fontcolor=white];
+    
+    // External Services
+    subgraph cluster_external {
+        label="External Services";
+        color=gray;
+        style=filled;
+        fillcolor=lightgray;
+        
+        JWT [label="JWT\n(Authentication)", fillcolor=gold];
+        BadWords [label="Bad Words Filter\n(Content Moderation)", fillcolor=lightpink];
+        BCrypt [label="BCrypt\n(Password Hashing)", fillcolor=lightsteelblue];
+    }
+    
+    // Connections
+    UI -> Router;
+    UI -> State;
+    UI -> SocketClient;
+    Router -> Express [label="HTTP Requests"];
+    SocketClient -> SocketServer [label="WebSocket"];
+    
+    Express -> Auth;
+    Express -> UserController;
+    Express -> PostController;
+    Express -> CommentController;
+    Express -> MessageController;
+    
+    SocketServer -> MessageController;
+    
+    Auth -> JWT;
+    
+    UserController -> UserModel;
+    UserController -> FollowModel;
+    UserController -> BCrypt;
+    
+    PostController -> PostModel;
+    PostController -> PostLikeModel;
+    PostController -> BadWords;
+    PostController -> Utils;
+    
+    CommentController -> CommentModel;
+    CommentController -> PostModel;
+    CommentController -> BadWords;
+    
+    MessageController -> MessageModel;
+    MessageController -> ConversationModel;
+    MessageController -> BadWords;
+    
+    UserModel -> MongoDB;
+    PostModel -> MongoDB;
+    CommentModel -> MongoDB;
+    MessageModel -> MongoDB;
+    FollowModel -> MongoDB;
+    PostLikeModel -> MongoDB;
+    ConversationModel -> MongoDB;
+}
